@@ -4,6 +4,7 @@ const cors = require('cors')
 
 //? Files
 const config = require('../config')
+const db = require('./utils/database')
 
 //? Initial Configs
 
@@ -12,6 +13,15 @@ const app = express()
 app.use(express.json())
 //? Enable CORS 
 app.use(cors())
+
+//? Authenticate DB
+db.authenticate()
+    .then(() => console.log('Database Authenticated'))
+    .catch((err) => console.log(err))
+//? Sync DataBase Models
+db.sync()
+    .then(() => console.log('Database Synced'))
+    .catch(err => console.log(err))
 
 //? Routes v1
 app.get('/', (req, res) => {
