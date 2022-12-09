@@ -86,6 +86,40 @@ const patchMyUser = (req, res) => {
         })
 }
 
+//? Solo admins pueden ejecutarlo
+const deleteUser = (req, res) => {
+    const id = req.params.id 
+    userControllers.deleteUser(id)
+        .then((data) => {
+            if(data){
+                res.status(204).json()
+            } else {
+                res.status(404).json({message: `User with id:${id}, Not Found`})
+            }
+        })
+        .catch((err) => {
+            res.status(400).json({message: err.message})
+        })
+}
 
+const deleteMyUser = (req, res) => {
+    const id = req.user.id 
+    userControllers.deleteUser(id)
+        .then(() => {
+            res.status(204).json()
+        })
+        .catch((err) => {
+            res.status(400).json({message: err.message})
+        })
+}
 
-
+module.exports= {
+    getAllUsers,
+    getMyUser,
+    getUserById,
+    postUser,
+    patchMyUser,
+    patchUser,
+    deleteMyUser,
+    deleteUser
+}
