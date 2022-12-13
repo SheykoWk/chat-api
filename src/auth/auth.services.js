@@ -1,13 +1,15 @@
 const jwt = require('jsonwebtoken')
 
-const checkUsersCredentials = require('./auth.controllers')
+const authControllers = require('./auth.controllers')
 const jwtSecret = require('../../config').api.jwtSecret
+const mailer = require('../utils/mailer')
+const config = require('../../config')
 
 const postLogin = (req, res) => {
     const {email, password} = req.body
 
     if(email && password){
-        checkUsersCredentials(email, password)
+        authControllers.checkUsersCredentials(email, password)
             .then((data) => {
                 if(data){
                     const token = jwt.sign({
@@ -35,5 +37,35 @@ const postLogin = (req, res) => {
     }
 }
 
+const postRecoveryToken = (req, res) => {
 
-module.exports = postLogin
+    const { email } = req.body
+    authControllers.createRecoveryToken(email)
+        .then((data) => {
+            if(data){
+                mailer.sendMail({
+                    from: '<test.academlo@gmail.com>',
+                    to: email,
+                    subject: 'Recuperación de Contraseña',
+                    html: `<a href='${config.api.host}/api/v1/auth/recovery-password/${data.id}'>Recuperar contraseña</a>`
+                })
+            }
+            res.status(200).json({message: 'Email sended!, Check your inbox'})
+        })
+        .catch((err) => {
+            res.status(400).json({message: err.message})
+        })
+}
+
+
+
+
+
+
+
+
+
+module.exports = {
+    postLogin,
+    postRecoveryToken
+}
