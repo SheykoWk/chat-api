@@ -2,6 +2,19 @@ const uuid = require('uuid')
 
 const Conversations = require('../models/conversations.models')
 const Participants = require('../models/participants.models')
+const Users = require('../models/users.models')
+
+const findAllConversations = async () => {
+    const data = await Conversations.findAll({
+        include: {
+            model: Participants,
+            include: {
+                model : Users
+            }
+        }
+    })
+    return data
+}
 
 const createConversation = async (obj) => {
     const newConversation = await Conversations.create({
@@ -29,14 +42,15 @@ const createConversation = async (obj) => {
 }
 
 
-// createConversation({
-//     title: 'Conversacion Sahid - Evertz',//? Titulo del chat
-//     ownerId: 'db8b69e8-3233-43a0-a0b1-87774ffc8566', //? Evertz como owner
-//     participantId: 'c4a8c88d-37a8-4c38-b251-8cef07c33145' //? Sahid como invitado
-// })
-// .then(data => console.log(data))
-// .catch(err => console.log(err))
+//* createConversation({
+//*     title: 'Conversacion Sahid - Evertz',//? Titulo del chat
+//*     ownerId: 'db8b69e8-3233-43a0-a0b1-87774ffc8566', //? Evertz como owner
+//*     participantId: 'c4a8c88d-37a8-4c38-b251-8cef07c33145' //? Sahid como invitado
+//* })
+//* .then(data => console.log(data))
+//* .catch(err => console.log(err))
 
-
-
-
+module.exports = {
+    findAllConversations,
+    createConversation
+}
